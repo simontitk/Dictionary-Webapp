@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+{# ADD CATEGORY FORM----------------------------------------------------------------------------------------#}
+<form action="add_category" method="POST">
+    <label for="category">Add new category</label>
+    <input type="text" name="category" placeholder="Enter a new category" required>
+    <input type="submit" value="Add">
+</form>
+
+
+{# DELETE CATEGORY FORM------------------------------------------------------------------------------------ #}
+<form action="delete_category" method="POST">
+    <label for="categories"> Delete category</label>
+    <select name="categories">
+        {% for category in categories %}
+            <option value={{category}}> {{category}} </option>
+        {% endfor %}
+    </select>
+    <input type="submit" value="Delete" {% if categories|length == 0 %} disabled {% endif %}>
+</form><br>
+
+
+{# ADD WORD FORM-------------------------------------------------------------------------------------------- #}
+<form action="add_word" method="POST">
+    <label for="hungarian"> Hungarian </label>
+    <input type="text" name="hungarian" placeholder="Hungarian" required><br>
+    <label for="english"> English </label>
+    <input type="text" name="english" placeholder="English" required><br>
+    <label for="danish"> Danish </label>
+    <input type="text" name="danish" placeholder="Danish" required><br>
+    <label for="category"> Category </label>
+    <select name="category">
+        {% for category in categories %}
+            <option value={{category}}> {{category}} </option>
+        {% endfor %}
+    </select> <br>
+    <input type="submit" value="Add word" {% if categories|length == 0 %} disabled {% endif %}>
+</form> <br>
+
+
+{# TABLE OF ALL WORDS-----------------------------------------------------------------------------------------#}
+<table>
+    <thead>
+        <tr>
+            <th>Hungarian</th>
+            <th>English</th>
+            <th>Danish</th>
+            <th>Category</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for word in words%}
+            {% if word.category in session["selected_categories"]%}
+                <tr>
+                    <td>{{word.hungarian}}</td>
+                    <td>{{word.english}}</td>
+                    <td>{{word.danish}}</td>
+                    <td>{{word.category}}</td>
+                    <td>
+                        <form action="delete_word" method="POST">
+                            <input type="hidden" name="id" value="{{word.id}}">
+                            <input type="hidden" name="category" value="{{word.category}}">
+                            <input type="submit" value="X">
+                        </form>
+                    </td>
+                    {#TODO: modal for each word linked to an edit button #}
+                </tr>
+            {% endif %}         
+        {% endfor %}
+    </tbody>
+</table>
+
+{# FILTER WORDS FORM------------------------------------------------------------------------------------------ #}
+<form action="filter_words" method="POST">
+    {% for category in categories %}
+        <input type="checkbox" name="categories" value="{{category}}" {% if category in session["selected_categories"] %} checked {% endif %}>
+         {{category}}  <br>
+    {% endfor %}
+    <input type="submit" value="Filter words">
+</form>
+
+{% endblock %}
